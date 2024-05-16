@@ -1,1 +1,4 @@
-/node_modules
+frontend/node_modules
+frontend/package-lock.json
+music_room/__pycache__
+api/__pycache__
