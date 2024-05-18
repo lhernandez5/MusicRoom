@@ -19,7 +19,7 @@ const CreateRoomPage = () => {
   };
 
   const handleGuestCanPauseChange = (e) => {
-    setGuestCanPause(e.target.value);
+    setGuestCanPause(e.target.value === "true" ? true : false);
   };
 
   const handleRoomButtonPressed = () => {
@@ -33,9 +33,9 @@ const CreateRoomPage = () => {
         guest_can_pause: guestCanPause,
       }),
     };
-    fetch("/api/create-room", requestOption).then((response) =>
-      response.json()
-    ).then((data) => console.log(data));
+    fetch("/api/create-room", requestOption)
+      .then((response) => response.json())
+      .then((data) => console.log(data));
   };
 
   return (
@@ -52,8 +52,7 @@ const CreateRoomPage = () => {
           </FormHelperText>
           <RadioGroup
             row
-            defaultValue={guestCanPause}
-            value={guestCanPause}
+            defaultValue="true"
             onChange={handleGuestCanPauseChange}
           >
             <FormControlLabel
