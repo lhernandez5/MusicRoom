@@ -3,7 +3,7 @@ import Homepage from "./Homepage";
 
 const App = () => {
   return (
-    <div>
+    <div className="center">
       <Homepage />
     </div>
   );
