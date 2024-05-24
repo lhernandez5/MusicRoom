@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Grid, Button, Typography } from "@material-ui/core";
 
-const Room = () => {
+const Room = ({ leaveRoomCallback }) => {
   const [votesToSkip, setVotesToSkip] = useState(2);
   const [guestCanPause, setGuestCanPause] = useState(false);
   const [isHost, setIsHost] = useState(false);
   const { roomCode } = useParams();
+  const leaveRoomCallbackProp = leaveRoomCallback;
+  const navigate = useNavigate();
 
   useEffect(() => {
     getRoomDetails();
@@ -13,20 +16,66 @@ const Room = () => {
 
   const getRoomDetails = () => {
     fetch("/api/get-room" + "?code=" + roomCode)
-      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+        if (!response.ok) {
+          console.log(response.ok);
+          leaveRoomCallbackProp;
+          navigate("/");
+        }
+        return response.json();
+      })
       .then((data) => {
         setVotesToSkip(data.votes_to_skip);
-        setGuestCanPause(data.guest_can_pause);
-        setIsHost(data.is_host);
+        setGuestCanPause(data.guest_can_pause.toString());
+        setIsHost(data.is_host.toString());
       });
+  };
+
+  const leaveButtonPressed = () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+    fetch("/api/leave-room", requestOptions).then((_response) => {
+      leaveRoomCallbackProp;
+      navigate("/");
+    });
   };
 
   return (
     <div>
-      <h1>Room Code: {roomCode}</h1>
-      <p>Votes to Skip: {votesToSkip}</p>
-      <p>Guest Can Pause: {guestCanPause.toString()}</p>
-      <p>Host: {isHost.toString()}</p>
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Typography variant="h4" component="h4">
+            Code: {roomCode}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Votes to Skip: {votesToSkip}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Guest can pause: {guestCanPause}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Host: {isHost}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={leaveButtonPressed}
+          >
+            Leave Room
+          </Button>
+        </Grid>
+      </Grid>
     </div>
   );
 };

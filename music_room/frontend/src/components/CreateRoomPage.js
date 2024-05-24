@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
   Grid,
@@ -15,6 +15,7 @@ import {
 const CreateRoomPage = () => {
   const [guestCanPause, setGuestCanPause] = useState(true);
   const [votesToSkip, setVotesToSkip] = useState(2);
+  const navigate = useNavigate();
 
   const handleVotesChange = (e) => {
     setVotesToSkip(e.target.value);
@@ -37,7 +38,7 @@ const CreateRoomPage = () => {
     };
     fetch("/api/create-room", requestOption)
       .then((response) => response.json())
-      .then((data) => console.log(data));
+      .then((data) => navigate("/room/" + data.code));
   };
 
   return (
