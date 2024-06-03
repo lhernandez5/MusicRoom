@@ -10,19 +10,27 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
+  Collapse,
 } from "@material-ui/core";
 
-const CreateRoomPage = () => {
+const CreateRoomPage = ({
+  roomCode = null,
+  update = false,
+  updateCallback = () => {},
+}) => {
   const [guestCanPause, setGuestCanPause] = useState(true);
   const [votesToSkip, setVotesToSkip] = useState(2);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
+  const title = update ? "Update Room" : "Create a Room";
 
   const handleVotesChange = (e) => {
     setVotesToSkip(e.target.value);
   };
 
   const handleGuestCanPauseChange = (e) => {
-    setGuestCanPause(e.target.value === "true" ? true : false);
+    setGuestCanPause(e.target.value);
   };
 
   const handleRoomButtonPressed = () => {
@@ -41,11 +49,73 @@ const CreateRoomPage = () => {
       .then((data) => navigate("/room/" + data.code));
   };
 
+  const handleUpdateButtonPressed = () => {
+    const requestOption = {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        votes_to_skip: votesToSkip,
+        guest_can_pause: guestCanPause,
+        code: roomCode,
+      }),
+    };
+    fetch("/api/update-room", requestOption).then((response) => {
+      if (response.ok) {
+        setSuccessMsg("Room updated successfully!");
+      } else {
+        setErrorMsg("Error updating room ...");
+      }
+      updateCallback();
+    });
+  };
+
+  const renderCreateButtons = () => {
+    return (
+      <>
+        <Grid item xs={12} align="center">
+          <Button
+            color="primary"
+            variant="contained"
+            onClick={handleRoomButtonPressed}
+          >
+            Create A Room
+          </Button>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button color="secondary" variant="contained" to="/" component={Link}>
+            Back
+          </Button>
+        </Grid>
+      </>
+    );
+  };
+
+  const renderUpdateButtons = () => {
+    return (
+      <Grid item xs={12} align="center">
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={handleUpdateButtonPressed}
+        >
+          Update Room
+        </Button>
+      </Grid>
+    );
+  };
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
+        <Collapse in={errorMsg != "" || successMsg != ""}>
+          {successMsg}
+        </Collapse>
+      </Grid>
+      <Grid item xs={12} align="center">
         <Typography component="h4" variant="h4">
-          Create A Room
+          {title}
         </Typography>
       </Grid>
       <Grid item xs={12} align="center">
@@ -55,7 +125,7 @@ const CreateRoomPage = () => {
           </FormHelperText>
           <RadioGroup
             row
-            defaultValue="true"
+            defaultValue={guestCanPause.toString()}
             onChange={handleGuestCanPauseChange}
           >
             <FormControlLabel
@@ -78,7 +148,6 @@ const CreateRoomPage = () => {
           <TextField
             required={true}
             type="number"
-            value={votesToSkip}
             onChange={handleVotesChange}
             defaultValue={votesToSkip}
             inputProps={{ min: 1, style: { textAlign: "center" } }}
@@ -88,20 +157,7 @@ const CreateRoomPage = () => {
           </FormHelperText>
         </FormControl>
       </Grid>
-      <Grid item xs={12} align="center">
-        <Button
-          color="primary"
-          variant="contained"
-          onClick={handleRoomButtonPressed}
-        >
-          Create A Room
-        </Button>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <Button color="secondary" variant="contained" to="/" component={Link}>
-          Back
-        </Button>
-      </Grid>
+      {update ? renderUpdateButtons() : renderCreateButtons()}
     </Grid>
   );
 };

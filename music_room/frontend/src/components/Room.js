@@ -7,8 +7,8 @@ const Room = ({ leaveRoomCallback }) => {
   const [votesToSkip, setVotesToSkip] = useState(2);
   const [guestCanPause, setGuestCanPause] = useState(false);
   const [isHost, setIsHost] = useState(false);
-  const { roomCode } = useParams();
   const [showSettings, setShowSettings] = useState(false);
+  const { roomCode } = useParams();
   const leaveRoomCallbackProp = leaveRoomCallback;
   const navigate = useNavigate();
 
@@ -21,7 +21,6 @@ const Room = ({ leaveRoomCallback }) => {
       .then((response) => {
         console.log(response);
         if (!response.ok) {
-          console.log(response.ok);
           leaveRoomCallbackProp;
           navigate("/");
         }
@@ -29,8 +28,8 @@ const Room = ({ leaveRoomCallback }) => {
       })
       .then((data) => {
         setVotesToSkip(data.votes_to_skip);
-        setGuestCanPause(data.guest_can_pause.toString());
-        setIsHost(data.is_host.toString());
+        setGuestCanPause(data.guest_can_pause);
+        setIsHost(data.is_host);
       });
   };
 
@@ -58,7 +57,7 @@ const Room = ({ leaveRoomCallback }) => {
             votesToSkip={votesToSkip}
             guestCanPause={guestCanPause}
             roomCode={roomCode}
-            updateCallback={""}
+            updateCallback={getRoomDetails}
           />
         </Grid>
         <Grid item xs={12} align="center">
@@ -90,44 +89,43 @@ const Room = ({ leaveRoomCallback }) => {
 
   if (showSettings) {
     return renderSettings();
-  } else {
-    return (
-      <div>
-        <Grid container spacing={1}>
-          <Grid item xs={12} align="center">
-            <Typography variant="h4" component="h4">
-              Code: {roomCode}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} align="center">
-            <Typography variant="h6" component="h6">
-              Votes to Skip: {votesToSkip}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} align="center">
-            <Typography variant="h6" component="h6">
-              Guest can pause: {guestCanPause}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} align="center">
-            <Typography variant="h6" component="h6">
-              Host: {isHost}
-            </Typography>
-          </Grid>
-          {isHost ? renderSettingsButton() : null}
-          <Grid item xs={12} align="center">
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={leaveButtonPressed}
-            >
-              Leave Room
-            </Button>
-          </Grid>
-        </Grid>
-      </div>
-    );
   }
+  return (
+    <div>
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <Typography variant="h4" component="h4">
+            Code: {roomCode}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Votes to Skip: {votesToSkip}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Guest can pause: {guestCanPause.toString()}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Typography variant="h6" component="h6">
+            Host: {isHost.toString()}
+          </Typography>
+        </Grid>
+        {isHost ? renderSettingsButton() : null}
+        <Grid item xs={12} align="center">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={leaveButtonPressed}
+          >
+            Leave Room
+          </Button>
+        </Grid>
+      </Grid>
+    </div>
+  );
 };
 
 export default Room;
