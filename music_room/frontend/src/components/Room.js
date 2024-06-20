@@ -14,12 +14,11 @@ const Room = ({ leaveRoomCallback }) => {
 
   useEffect(() => {
     getRoomDetails();
-  }, []); // Empty dependency array to run only once, similar to componentDidMount
+  }, []);
 
   const getRoomDetails = () => {
     fetch("/api/get-room" + "?code=" + roomCode)
       .then((response) => {
-        console.log(response);
         if (!response.ok) {
           leaveRoomCallbackProp;
           navigate("/");

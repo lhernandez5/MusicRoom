@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
@@ -13,27 +13,39 @@ import {
   Collapse,
 } from "@material-ui/core";
 
-const CreateRoomPage = ({
-  roomCode = null,
-  update = false,
-  updateCallback = () => {},
-}) => {
+const CreateRoomPage = ({ roomCode, update, updateCallback }) => {
   const [guestCanPause, setGuestCanPause] = useState(true);
   const [votesToSkip, setVotesToSkip] = useState(2);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (update && roomCode) {
+      // Fetch the current room settings
+      fetch(`/api/get-room?code=${roomCode}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setGuestCanPause(data.guest_can_pause);
+          setVotesToSkip(data.votes_to_skip);
+        });
+    }
+  }, [update, roomCode]);
+
   const title = update ? "Update Room" : "Create a Room";
 
-  const handleVotesChange = (e) => {
-    setVotesToSkip(e.target.value);
+  let handleVotesChange = (e) => {
+    const newValue = e.target.value;
+    if (!isNaN(newValue)) {
+      setVotesToSkip(Number(newValue));
+    }
   };
 
-  const handleGuestCanPauseChange = (e) => {
-    setGuestCanPause(e.target.value);
+  let handleGuestCanPauseChange = (e) => {
+    setGuestCanPause(e.target.value === "true");
   };
 
-  const handleRoomButtonPressed = () => {
+  const handleCreateRoomButtonPressed = () => {
     const requestOption = {
       method: "POST",
       headers: {
@@ -73,12 +85,12 @@ const CreateRoomPage = ({
 
   const renderCreateButtons = () => {
     return (
-      <>
+      <Grid container spacing={1}>
         <Grid item xs={12} align="center">
           <Button
             color="primary"
             variant="contained"
-            onClick={handleRoomButtonPressed}
+            onClick={handleCreateRoomButtonPressed}
           >
             Create A Room
           </Button>
@@ -88,7 +100,7 @@ const CreateRoomPage = ({
             Back
           </Button>
         </Grid>
-      </>
+      </Grid>
     );
   };
 
@@ -125,7 +137,7 @@ const CreateRoomPage = ({
           </FormHelperText>
           <RadioGroup
             row
-            defaultValue={guestCanPause.toString()}
+            value={guestCanPause.toString()}
             onChange={handleGuestCanPauseChange}
           >
             <FormControlLabel
@@ -146,10 +158,12 @@ const CreateRoomPage = ({
       <Grid item xs={12} align="center">
         <FormControl>
           <TextField
+            id="number-input"
+            name="number"
             required={true}
-            type="number"
+            type="text"
             onChange={handleVotesChange}
-            defaultValue={votesToSkip}
+            value={votesToSkip.toString()}
             inputProps={{ min: 1, style: { textAlign: "center" } }}
           />
           <FormHelperText>

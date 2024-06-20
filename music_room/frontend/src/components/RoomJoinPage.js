@@ -61,7 +61,6 @@ const RoomJoinPage = () => {
       </Grid>
     </Grid>
   );
-  
 };
 
 export default RoomJoinPage;
