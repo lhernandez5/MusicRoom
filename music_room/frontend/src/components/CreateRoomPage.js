@@ -12,6 +12,7 @@ import {
   FormControlLabel,
   Collapse,
 } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 
 const CreateRoomPage = ({ roomCode, update, updateCallback }) => {
   const [guestCanPause, setGuestCanPause] = useState(true);
@@ -35,10 +36,8 @@ const CreateRoomPage = ({ roomCode, update, updateCallback }) => {
   const title = update ? "Update Room" : "Create a Room";
 
   let handleVotesChange = (e) => {
-    const newValue = e.target.value;
-    if (!isNaN(newValue)) {
-      setVotesToSkip(Number(newValue));
-    }
+    const value = e.target.value;
+    setVotesToSkip(value === "" ? "" : Math.max(0, parseInt(value, 10)));
   };
 
   let handleGuestCanPauseChange = (e) => {
@@ -122,7 +121,30 @@ const CreateRoomPage = ({ roomCode, update, updateCallback }) => {
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
         <Collapse in={errorMsg != "" || successMsg != ""}>
-          {successMsg}
+          {successMsg != "" ? (
+            <Alert
+              severity="success"
+              onClose={() => {
+                setSuccessMsg("");
+              }}
+            >
+              {successMsg}
+            </Alert>
+          ) : (
+            ""
+          )}
+          {errorMsg != "" ? (
+            <Alert
+              severity="error"
+              onClose={() => {
+                setErrorMsg("");
+              }}
+            >
+              {errorMsg}
+            </Alert>
+          ) : (
+            ""
+          )}
         </Collapse>
       </Grid>
       <Grid item xs={12} align="center">
@@ -158,13 +180,15 @@ const CreateRoomPage = ({ roomCode, update, updateCallback }) => {
       <Grid item xs={12} align="center">
         <FormControl>
           <TextField
-            id="number-input"
-            name="number"
-            required={true}
-            type="text"
+            id="outlined-number"
+            type="number"
             onChange={handleVotesChange}
-            value={votesToSkip.toString()}
-            inputProps={{ min: 1, style: { textAlign: "center" } }}
+            value={votesToSkip}
+            inputProps={{
+              min: 1,
+              shrink: true,
+              style: { textAlign: "center" },
+            }}
           />
           <FormHelperText>
             <div align="center">Votes Required To Skip Song</div>

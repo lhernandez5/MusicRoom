@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { TextField, Button, Grid, Typography } from "@material-ui/core";
-import { Link, useNavigate } from "react-router-dom";
+import { Link , useNavigate } from "react-router-dom";
 
 const RoomJoinPage = () => {
-  const [roomCode, setRoomCode] = useState();
-  const [errorMessage, setError] = useState();
+  const [roomCode, setRoomCode] = useState("");
+  const [errorMessage, setError] = useState("");
   const navigate = useNavigate();
 
   const handleTextFieldChange = (e) => {
@@ -32,15 +32,15 @@ const RoomJoinPage = () => {
   };
 
   return (
-    <Grid container spacing={1} alignItems="center">
+    <Grid container spacing={3} alignItems="center" justifyContent="center">
       <Grid item xs={12} align="center">
-        <Typography item xs={12}>
+        <Typography variant="h4" component="h1">
           Join a Room
         </Typography>
       </Grid>
       <Grid item xs={12} align="center">
         <TextField
-          error={errorMessage}
+          error={!!errorMessage}
           label="Code"
           placeholder="Enter a Room Code"
           value={roomCode}
@@ -55,7 +55,7 @@ const RoomJoinPage = () => {
         </Button>
       </Grid>
       <Grid item xs={12} align="center">
-        <Button variant="contained" color="secondary" to="/" component={Link}>
+        <Button variant="contained" color="secondary" component={Link} to="/">
           Back
         </Button>
       </Grid>
