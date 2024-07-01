@@ -17,3 +17,5 @@ npm install react-router-dom
 npm install @material-ui/icons
 
 npm install style-loader css-loader --save-dev
+
+npm install @material-ui/lab
