@@ -1,5 +1,5 @@
 # MusicRoom App
-#### This is a collaborative music playing app that will integrate with the third party Spotify API. I use phython, django, javascript, react, and css in this full stack app. <br/><br/>  
+#### This is a collaborative music playing app. I use phython, django, javascript, react, and css in this full stack app. <br/><br/>  
 
 ## Packages to install:
 npm i webpack webpack-cli --save-dev
